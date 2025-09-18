@@ -1,16 +1,71 @@
-streamlit
-pandas
-requests
-beautifulsoup4
-pyarrow
-altair
-gitpython
-pillow
-pydeck
-tornado
-tenacity
-typing_extensions
-jsonschema
-narwhals
+# Script Hub + Marketing Agency Integration Requirements
+# Complete dependency list for marketing automation platform
+
+# Core Script Hub Dependencies
+streamlit>=1.28.0
+pandas>=1.5.0
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+pyarrow>=10.0.0
+altair>=4.2.0
+gitpython>=3.1.0
+pillow>=9.5.0
+pydeck>=0.8.0
+tornado>=6.2.0
+tenacity>=8.2.0
+typing_extensions>=4.5.0
+jsonschema>=4.17.0
+narwhals>=0.5.0
 numpy<3
 pandas<3
+
+# Marketing Agency AI Integration
+anthropic>=0.25.0          # Claude API integration
+openai>=1.30.0             # OpenAI API integration (backup)
+
+# Report Generation System
+Flask==2.3.3               # Web interface for reports
+Werkzeug==2.3.7            # Flask dependency
+python-dotenv>=1.0.0       # Environment variable management
+
+# Notion Integration
+notion-client>=2.2.1       # Notion API integration
+
+# SEO & Marketing Tools
+advertools>=0.14.0         # SEO and SEM analysis tools
+google-api-python-client>=2.100.0  # Google APIs (Analytics, Search Console)
+google-auth-oauthlib>=1.0.0        # Google OAuth
+google-auth-httplib2>=0.2.0        # Google Auth HTTP
+
+# Web Scraping & Research
+selenium>=4.15.0           # Web automation for research
+webdriver-manager>=4.0.0   # Chrome driver management
+
+# Social Media APIs
+tweepy>=4.14.0             # Twitter API
+facebook-sdk>=3.1.0        # Facebook Graph API
+instagrapi>=1.19.0         # Instagram API
+
+# Content & Text Processing
+nltk>=3.8                  # Natural language processing
+textstat>=0.7.3            # Readability analysis
+wordcloud>=1.9.2           # Word cloud generation
+
+# Email Marketing
+sendgrid>=6.10.0           # Email sending service
+mailchimp-marketing>=3.0.80  # Mailchimp API
+
+# Analytics & Tracking
+google-analytics-reporting-api-v4>=1.0.0  # GA4 reporting
+
+# Data Export & Utilities
+openpyxl>=3.1.0           # Excel file handling
+python-dateutil>=2.8.0    # Date parsing and manipulation
+
+# Development & Testing
+pytest>=7.4.0             # Testing framework
+python-decouple>=3.8       # Settings management
+
+# Security & Performance
+cryptography>=41.0.0       # Secure credential handling
+cachetools>=5.3.0          # Caching for performance
