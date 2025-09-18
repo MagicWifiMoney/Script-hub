@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+.DS_Store
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+
+# Local data and large folders
+python scripts/
+*.zip
+*.tar
+*.gz
+
+# Editor and tool configs
+.cursor/mcp.json
+.idea/
+.vscode/
+
+# Streamlit cache
+.streamlit/

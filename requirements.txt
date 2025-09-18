@@ -1,0 +1,16 @@
+streamlit
+pandas
+requests
+beautifulsoup4
+pyarrow
+altair
+gitpython
+pillow
+pydeck
+tornado
+tenacity
+typing_extensions
+jsonschema
+narwhals
+numpy<3
+pandas<3
