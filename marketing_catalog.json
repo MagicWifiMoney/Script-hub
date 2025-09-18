@@ -1,0 +1,384 @@
+{
+  "marketing_agents": {
+    "seo_strategist.py": {
+      "name": "🔍 SEO Strategist",
+      "category": "Search Engine Optimization",
+      "description": "Analyzes your website to improve Google rankings and get more organic traffic",
+      "what_it_does": "Creates a detailed report on how to improve your website's SEO performance, including keyword opportunities, technical fixes, and content recommendations",
+      "perfect_for": "Business owners who want to rank higher on Google and get more website visitors",
+      "example_use": "Analyze 'mycompany.com' to find the top 5 SEO improvements that will boost search rankings",
+      "inputs_needed": {
+        "website_url": {
+          "label": "Your Website URL",
+          "placeholder": "https://yourwebsite.com",
+          "help": "The website you want to analyze for SEO improvements"
+        },
+        "analysis_type": {
+          "label": "Type of Analysis",
+          "options": [
+            {"value": "quick", "label": "Quick Analysis (5 minutes)", "description": "Fast overview of main SEO issues"},
+            {"value": "comprehensive", "label": "Comprehensive Analysis (30 minutes)", "description": "Deep dive into all SEO aspects"},
+            {"value": "technical", "label": "Technical Analysis", "description": "Focus on website speed and technical issues"},
+            {"value": "local", "label": "Local SEO Analysis", "description": "Best for local businesses and service providers"}
+          ],
+          "default": "quick"
+        },
+        "client_name": {
+          "label": "Business/Client Name (Optional)",
+          "placeholder": "ABC Company",
+          "help": "Personalizes the report for your business"
+        }
+      },
+      "output_description": "You'll get a structured SEO analysis that you can copy into ChatGPT or Claude to get detailed, actionable recommendations for improving your website's search rankings.",
+      "next_steps": "Copy the analysis into your AI assistant (ChatGPT/Claude) and ask: 'Please provide detailed recommendations for each item in this SEO analysis'",
+      "status": "✅ Working",
+      "time_to_complete": "2-5 minutes"
+    },
+    "copywriter.py": {
+      "name": "✍️ Content Creator",
+      "category": "Content & Copywriting",
+      "description": "Creates professional copy for websites, emails, social media, and marketing materials",
+      "what_it_does": "Generates structured briefs for creating compelling marketing content that converts visitors into customers",
+      "perfect_for": "Anyone who needs to write marketing copy but doesn't know where to start",
+      "example_use": "Create a landing page brief for a fitness coaching service targeting busy professionals",
+      "inputs_needed": {
+        "content_type": {
+          "label": "What do you need to write?",
+          "options": [
+            {"value": "landing_page", "label": "Website Landing Page", "description": "Main page that sells your product/service"},
+            {"value": "email", "label": "Email Campaign", "description": "Marketing emails to your subscribers"},
+            {"value": "social", "label": "Social Media Posts", "description": "Content for Facebook, Instagram, LinkedIn"},
+            {"value": "blog", "label": "Blog Article", "description": "Educational content for your website"},
+            {"value": "ad_copy", "label": "Advertisement Copy", "description": "Text for Google/Facebook ads"},
+            {"value": "product_desc", "label": "Product Description", "description": "Descriptions for products or services"}
+          ]
+        },
+        "target_audience": {
+          "label": "Who are you writing for?",
+          "placeholder": "Small business owners, busy parents, fitness enthusiasts, etc.",
+          "help": "Describe your ideal customer in 2-3 words"
+        },
+        "brand_tone": {
+          "label": "What tone should it have?",
+          "options": [
+            {"value": "professional", "label": "Professional & Trustworthy"},
+            {"value": "friendly", "label": "Friendly & Approachable"},
+            {"value": "casual", "label": "Casual & Conversational"},
+            {"value": "authoritative", "label": "Expert & Authoritative"}
+          ],
+          "default": "professional"
+        },
+        "client_name": {
+          "label": "Business/Client Name (Optional)",
+          "placeholder": "Your Business Name",
+          "help": "Personalizes the content brief"
+        }
+      },
+      "output_description": "You'll receive a detailed content brief with headlines, structure, and key points that you can use to write compelling marketing copy or give to a copywriter.",
+      "next_steps": "Use the brief to write your content, or copy it into ChatGPT/Claude and ask: 'Please write the complete copy based on this brief'",
+      "status": "✅ Working",
+      "time_to_complete": "1-3 minutes"
+    },
+    "research_strategist.py": {
+      "name": "🔍 Market Researcher",
+      "category": "Business Research",
+      "description": "Researches your competitors, market opportunities, and target audience insights",
+      "what_it_does": "Creates comprehensive research briefs to understand your competition, market trends, and customer behavior",
+      "perfect_for": "Business owners who want to understand their market better and find new opportunities",
+      "example_use": "Research competitors for a local restaurant to find menu gaps and marketing opportunities",
+      "inputs_needed": {
+        "research_type": {
+          "label": "What do you want to research?",
+          "options": [
+            {"value": "competitive", "label": "Competitor Analysis", "description": "Study your main competitors and their strategies"},
+            {"value": "market", "label": "Market Analysis", "description": "Understand market size, trends, and opportunities"},
+            {"value": "audience", "label": "Customer Research", "description": "Learn about your target customers' needs and behaviors"},
+            {"value": "keyword", "label": "Keyword Research", "description": "Find what people search for in your industry"},
+            {"value": "industry", "label": "Industry Overview", "description": "Get insights about your entire industry"}
+          ]
+        },
+        "target_subject": {
+          "label": "What/who should we research?",
+          "placeholder": "Company name, industry, or keyword topic",
+          "help": "Enter the main focus of your research"
+        },
+        "depth": {
+          "label": "How detailed should it be?",
+          "options": [
+            {"value": "quick", "label": "Quick Overview (10 minutes)", "description": "Fast insights for immediate decisions"},
+            {"value": "standard", "label": "Standard Analysis (30 minutes)", "description": "Balanced depth and speed"},
+            {"value": "comprehensive", "label": "Deep Dive (1+ hour)", "description": "Thorough research for major decisions"}
+          ],
+          "default": "standard"
+        },
+        "client_name": {
+          "label": "Business/Client Name (Optional)",
+          "placeholder": "Your Business Name"
+        }
+      },
+      "output_description": "You'll get a structured research framework that guides you through analyzing competitors, market opportunities, and customer insights.",
+      "next_steps": "Use the research framework to gather information, or copy it into your AI assistant to help conduct the research for you.",
+      "status": "✅ Working",
+      "time_to_complete": "2-5 minutes"
+    },
+    "analyzer.py": {
+      "name": "📊 Performance Analyst",
+      "category": "Analytics & Reporting",
+      "description": "Analyzes your marketing performance and creates data-driven insights",
+      "what_it_does": "Creates frameworks for analyzing website traffic, conversion rates, social media performance, and marketing ROI",
+      "perfect_for": "Business owners who want to understand what's working in their marketing and what needs improvement",
+      "example_use": "Analyze last month's website performance to identify the biggest opportunities for improvement",
+      "inputs_needed": {
+        "analysis_type": {
+          "label": "What do you want to analyze?",
+          "options": [
+            {"value": "traffic", "label": "Website Traffic Analysis", "description": "Understand where visitors come from and how they behave"},
+            {"value": "conversion", "label": "Conversion Analysis", "description": "See how well your website turns visitors into customers"},
+            {"value": "seo", "label": "SEO Performance", "description": "Track search engine rankings and organic traffic"},
+            {"value": "social", "label": "Social Media Performance", "description": "Measure social media engagement and growth"},
+            {"value": "comprehensive", "label": "Complete Marketing Analysis", "description": "Overall performance across all marketing channels"}
+          ]
+        },
+        "client_name": {
+          "label": "Business/Client Name",
+          "placeholder": "Your Business Name",
+          "help": "The business whose performance you want to analyze"
+        },
+        "time_period": {
+          "label": "What time period?",
+          "options": [
+            {"value": "week", "label": "Last Week"},
+            {"value": "month", "label": "Last Month"},
+            {"value": "quarter", "label": "Last 3 Months"},
+            {"value": "year", "label": "Last Year"}
+          ],
+          "default": "month"
+        }
+      },
+      "output_description": "You'll receive a comprehensive analysis framework that helps you understand your marketing performance and identify improvement opportunities.",
+      "next_steps": "Use this framework to analyze your data in Google Analytics, social media platforms, or your CRM system.",
+      "status": "✅ Working",
+      "time_to_complete": "3-5 minutes"
+    },
+    "conversion_strategist.py": {
+      "name": "🎯 Conversion Optimizer",
+      "category": "Conversion & Sales",
+      "description": "Improves your website and marketing to convert more visitors into customers",
+      "what_it_does": "Creates optimization strategies to increase conversion rates, reduce cart abandonment, and improve sales funnels",
+      "perfect_for": "Business owners who get website traffic but want more visitors to become customers",
+      "example_use": "Optimize checkout process to reduce cart abandonment from 70% to 50%",
+      "inputs_needed": {
+        "optimization_type": {
+          "label": "What do you want to optimize?",
+          "options": [
+            {"value": "landing_page", "label": "Landing Page", "description": "Improve your main sales page"},
+            {"value": "checkout", "label": "Checkout Process", "description": "Reduce cart abandonment"},
+            {"value": "form", "label": "Contact/Lead Forms", "description": "Get more form submissions"},
+            {"value": "email", "label": "Email Campaigns", "description": "Improve email open and click rates"},
+            {"value": "funnel", "label": "Sales Funnel", "description": "Optimize entire customer journey"}
+          ]
+        },
+        "current_rate": {
+          "label": "Current conversion rate (%)",
+          "placeholder": "2.5",
+          "help": "If you don't know, use 2.5 as average"
+        },
+        "target_improvement": {
+          "label": "Target improvement (%)",
+          "placeholder": "25",
+          "help": "How much better do you want it? (e.g., 25% improvement)"
+        },
+        "client_name": {
+          "label": "Business/Client Name (Optional)",
+          "placeholder": "Your Business Name"
+        }
+      },
+      "output_description": "You'll get a detailed conversion optimization strategy with specific tests to run and improvements to make.",
+      "next_steps": "Implement the recommended changes one at a time and measure the results to see which improvements work best.",
+      "status": "✅ Working",
+      "time_to_complete": "3-5 minutes"
+    },
+    "idea_strategist.py": {
+      "name": "💡 Campaign Creator",
+      "category": "Creative Strategy",
+      "description": "Generates creative marketing campaign ideas and strategies",
+      "what_it_does": "Creates innovative marketing campaign concepts, promotional ideas, and creative strategies to grow your business",
+      "perfect_for": "Business owners who need fresh marketing ideas and creative campaign concepts",
+      "example_use": "Generate holiday marketing campaign ideas for a local bakery",
+      "inputs_needed": {
+        "campaign_type": {
+          "label": "What type of campaign?",
+          "options": [
+            {"value": "product_launch", "label": "Product Launch", "description": "Introduce a new product or service"},
+            {"value": "seasonal", "label": "Seasonal Campaign", "description": "Holiday or seasonal promotions"},
+            {"value": "brand_awareness", "label": "Brand Awareness", "description": "Get more people to know your business"},
+            {"value": "lead_gen", "label": "Lead Generation", "description": "Get more potential customers"},
+            {"value": "creative", "label": "Creative Ideas", "description": "Out-of-the-box marketing concepts"}
+          ]
+        },
+        "target_audience": {
+          "label": "Who is your target audience?",
+          "placeholder": "busy professionals, young families, fitness enthusiasts, etc.",
+          "help": "Describe your ideal customers"
+        },
+        "budget_range": {
+          "label": "What's your budget range?",
+          "options": [
+            {"value": "small", "label": "Small Budget ($1K-5K)", "description": "Cost-effective, high-impact tactics"},
+            {"value": "medium", "label": "Medium Budget ($5K-20K)", "description": "Multi-channel approach with testing"},
+            {"value": "large", "label": "Large Budget ($20K-100K)", "description": "Comprehensive campaigns"},
+            {"value": "enterprise", "label": "Large Scale ($100K+)", "description": "Full-scale integrated marketing"}
+          ],
+          "default": "medium"
+        },
+        "client_name": {
+          "label": "Business/Client Name (Optional)",
+          "placeholder": "Your Business Name"
+        }
+      },
+      "output_description": "You'll receive creative campaign concepts with specific tactics, timelines, and implementation ideas tailored to your budget and audience.",
+      "next_steps": "Choose the ideas that resonate with your brand and start implementing them step by step, tracking results along the way.",
+      "status": "✅ Working",
+      "time_to_complete": "3-5 minutes"
+    },
+    "social_strategist.py": {
+      "name": "📱 Social Media Planner",
+      "category": "Social Media",
+      "description": "Creates social media strategies and content calendars for all platforms",
+      "what_it_does": "Develops platform-specific content strategies, posting schedules, and engagement tactics for social media growth",
+      "perfect_for": "Business owners who want to grow their social media presence and engage with customers online",
+      "example_use": "Create a 30-day Instagram content calendar for a fitness coach",
+      "inputs_needed": {
+        "platform": {
+          "label": "Which social media platform?",
+          "options": [
+            {"value": "instagram", "label": "Instagram", "description": "Visual content and stories"},
+            {"value": "facebook", "label": "Facebook", "description": "Community and business pages"},
+            {"value": "linkedin", "label": "LinkedIn", "description": "Professional networking"},
+            {"value": "twitter", "label": "Twitter/X", "description": "Real-time conversations"},
+            {"value": "tiktok", "label": "TikTok", "description": "Short-form video content"},
+            {"value": "youtube", "label": "YouTube", "description": "Long-form video content"},
+            {"value": "multi_platform", "label": "All Platforms", "description": "Integrated multi-platform strategy"}
+          ]
+        },
+        "strategy_type": {
+          "label": "What do you need help with?",
+          "options": [
+            {"value": "content_calendar", "label": "Content Calendar", "description": "30-day posting schedule with ideas"},
+            {"value": "engagement", "label": "Engagement Strategy", "description": "How to interact with your audience"},
+            {"value": "growth", "label": "Growth Strategy", "description": "How to get more followers"},
+            {"value": "advertising", "label": "Social Media Ads", "description": "Paid promotion strategies"}
+          ]
+        },
+        "target_audience": {
+          "label": "Who follows you or should follow you?",
+          "placeholder": "small business owners, fitness enthusiasts, food lovers, etc.",
+          "help": "Describe your ideal social media audience"
+        },
+        "client_name": {
+          "label": "Business/Client Name (Optional)",
+          "placeholder": "Your Business Name"
+        }
+      },
+      "output_description": "You'll get a comprehensive social media strategy with content ideas, posting schedules, and engagement tactics specific to your chosen platform.",
+      "next_steps": "Use the content calendar and strategy to start posting consistently, and track which types of content get the most engagement.",
+      "status": "✅ Working",
+      "time_to_complete": "3-5 minutes"
+    }
+  },
+  "marketing_reports": {
+    "generate_marketing_report.py": {
+      "name": "📄 Report Generator",
+      "category": "Reporting",
+      "description": "Turns your marketing analysis into professional client-ready reports",
+      "what_it_does": "Converts raw marketing data and analysis into polished, branded reports that look professional",
+      "perfect_for": "Agencies and consultants who need to deliver professional reports to clients",
+      "example_use": "Create a professional SEO audit report for a client presentation",
+      "inputs_needed": {
+        "report_type": {
+          "label": "What type of report?",
+          "options": [
+            {"value": "seo_audit", "label": "SEO Audit Report"},
+            {"value": "competitive_analysis", "label": "Competitor Analysis Report"},
+            {"value": "monthly_report", "label": "Monthly Performance Report"},
+            {"value": "client_onboarding", "label": "New Client Welcome Report"}
+          ]
+        },
+        "client_name": {
+          "label": "Client/Business Name",
+          "placeholder": "ABC Company",
+          "help": "The business this report is for"
+        }
+      },
+      "output_description": "Professional HTML report ready for client delivery or PDF export",
+      "next_steps": "Download the report and share with your client, or use as a template for future reports",
+      "status": "✅ Working",
+      "time_to_complete": "2-3 minutes"
+    }
+  },
+  "client_management": {
+    "client_onboarding.py": {
+      "name": "🤝 Client Onboarding",
+      "category": "Project Management",
+      "description": "Creates comprehensive onboarding checklists and workflows for new clients",
+      "what_it_does": "Generates 4-phase onboarding process with tasks, timelines, and deliverables for new client projects",
+      "perfect_for": "Agencies and consultants who want systematic client onboarding processes",
+      "example_use": "Create onboarding checklist for new e-commerce SEO client",
+      "inputs_needed": {
+        "client_name": {
+          "label": "Client Name",
+          "placeholder": "New Client Company"
+        },
+        "business_type": {
+          "label": "What type of business?",
+          "options": [
+            {"value": "ecommerce", "label": "E-commerce Store"},
+            {"value": "local_service", "label": "Local Service Business"},
+            {"value": "saas", "label": "Software/SaaS Company"},
+            {"value": "other", "label": "Other Business Type"}
+          ]
+        },
+        "website_url": {
+          "label": "Client Website",
+          "placeholder": "https://clientwebsite.com"
+        },
+        "industry": {
+          "label": "Industry",
+          "placeholder": "Healthcare, Retail, Professional Services, etc."
+        }
+      },
+      "output_description": "Complete 4-phase onboarding checklist with timelines, deliverables, and team assignments",
+      "next_steps": "Use this checklist to systematically onboard your new client and ensure nothing is missed",
+      "status": "✅ Working",
+      "time_to_complete": "2-4 minutes"
+    },
+    "notion_sync.py": {
+      "name": "📊 Client Database Sync",
+      "category": "Data Management",
+      "description": "Syncs client data and reports with Notion database for team collaboration",
+      "what_it_does": "Automatically organizes client information, project status, and reports in a shared Notion workspace",
+      "perfect_for": "Teams that use Notion for project management and want automated client data organization",
+      "example_use": "Sync monthly client report data to shared Notion database",
+      "inputs_needed": {
+        "sync_type": {
+          "label": "What do you want to sync?",
+          "options": [
+            {"value": "client_data", "label": "Client Information"},
+            {"value": "report_data", "label": "Report Data"},
+            {"value": "campaign_data", "label": "Campaign Performance"},
+            {"value": "full_sync", "label": "Everything"}
+          ]
+        },
+        "client_name": {
+          "label": "Client Name (Optional)",
+          "placeholder": "Specific client to sync"
+        }
+      },
+      "output_description": "Confirmation of data synced to Notion with links to updated database entries",
+      "next_steps": "Check your Notion workspace to see the updated client data and collaborate with your team",
+      "status": "🔧 Requires Notion Setup",
+      "setup_note": "Requires Notion integration - works in simulation mode by default",
+      "time_to_complete": "1-2 minutes"
+    }
+  }
+}
