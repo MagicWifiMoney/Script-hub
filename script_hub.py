@@ -173,6 +173,9 @@ with tab1:
             if selected_script:
                 st.markdown("### 📝 Tool Configuration")
 
+                # Initialize input_method to avoid scope issues
+                input_method = "guided_form"  # Default for marketing tools
+
                 if MARKETING_HELPERS_AVAILABLE and selected_script in marketing_files:
                     script_info = get_script_info(selected_script)
                     params = create_guided_form(selected_script, script_info)
@@ -205,7 +208,18 @@ with tab1:
                     try:
                         with st.spinner("Running your marketing analysis..."):
                             # Build command
-                            if input_method == "JSON" and params.strip():
+                            if input_method == "guided_form":
+                                # Handle guided form params (already formatted by create_guided_form)
+                                if params.strip():
+                                    if params.startswith('--'):
+                                        # Already formatted arguments
+                                        cmd = ["python3", selected_script] + params.split()
+                                    else:
+                                        # Simple parameters - pass as positional
+                                        cmd = ["python3", selected_script] + params.split()
+                                else:
+                                    cmd = ["python3", selected_script, "--help"]
+                            elif input_method == "JSON" and params.strip():
                                 # Handle JSON input
                                 try:
                                     json_params = json.loads(params)
