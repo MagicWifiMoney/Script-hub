@@ -19,6 +19,14 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+# Optional dependency handling
+try:
+    from notion_client import Client as NotionClient
+    NOTION_AVAILABLE = True
+except ImportError:
+    NOTION_AVAILABLE = False
+    print("⚠️  Notion integration not available. Install notion-client for full functionality.")
+
 def create_sample_client_data(client_name):
     """Create sample client data structure for Notion sync"""
     return {
@@ -84,7 +92,13 @@ def create_sample_report_data(client_name, report_type="monthly"):
     }
 
 def sync_with_notion(sync_type, data, client_name=None):
-    """Simulate syncing data with Notion (would integrate with actual Notion API)"""
+    """Sync data with Notion (simulated if Notion client not available)"""
+
+    if not NOTION_AVAILABLE:
+        print("⚠️  SIMULATION MODE: Notion client not installed")
+        print("💡 To enable real Notion sync: pip install notion-client")
+        print("🔧 Then set NOTION_API_KEY environment variable")
+        print()
 
     sync_operations = {
         "client_data": "👥 Client Database",
