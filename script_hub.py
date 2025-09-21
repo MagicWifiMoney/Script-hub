@@ -251,13 +251,31 @@ with tab1:
                                     cmd = ["python3", selected_script, "--help"]
 
                             # Execute script
-                            result = subprocess.run(
-                                cmd,
-                                capture_output=True,
-                                text=True,
-                                timeout=300,  # 5 minutes
-                                cwd=os.path.dirname(selected_script) if os.path.dirname(selected_script) else None
-                            )
+                            # Fix path handling - use absolute path or adjust working directory correctly
+                            script_dir = os.path.dirname(selected_script)
+                            script_name = os.path.basename(selected_script)
+
+                            # If we have a full path, use it directly without changing working directory
+                            if os.path.isabs(selected_script):
+                                # Use absolute path with original working directory
+                                result = subprocess.run(
+                                    cmd,
+                                    capture_output=True,
+                                    text=True,
+                                    timeout=300,  # 5 minutes
+                                    cwd=None  # Don't change working directory
+                                )
+                            else:
+                                # Use relative path with script's directory as working directory
+                                adjusted_cmd = cmd.copy()
+                                adjusted_cmd[1] = script_name  # Use just the filename
+                                result = subprocess.run(
+                                    adjusted_cmd,
+                                    capture_output=True,
+                                    text=True,
+                                    timeout=300,  # 5 minutes
+                                    cwd=script_dir
+                                )
 
                             output = result.stdout
                             if result.stderr:
