@@ -11,7 +11,9 @@
         "website_url": {
           "label": "Your Website URL",
           "placeholder": "https://yourwebsite.com",
-          "help": "The website you want to analyze for SEO improvements"
+          "help": "The website you want to analyze for SEO improvements",
+          "argument_type": "positional",
+          "required": true
         },
         "analysis_type": {
           "label": "Type of Analysis",
@@ -21,12 +23,14 @@
             {"value": "technical", "label": "Technical Analysis", "description": "Focus on website speed and technical issues"},
             {"value": "local", "label": "Local SEO Analysis", "description": "Best for local businesses and service providers"}
           ],
-          "default": "quick"
+          "default": "quick",
+          "argument_type": "optional"
         },
         "client_name": {
           "label": "Business/Client Name (Optional)",
           "placeholder": "ABC Company",
-          "help": "Personalizes the report for your business"
+          "help": "Personalizes the report for your business",
+          "argument_type": "optional"
         }
       },
       "output_description": "You'll get a structured SEO analysis that you can copy into ChatGPT or Claude to get detailed, actionable recommendations for improving your website's search rankings.",

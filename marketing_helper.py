@@ -71,7 +71,8 @@ def create_guided_form(script_path, script_info):
         # Fall back to simple input for scripts without guided forms
         return st.text_input("Parameters:", placeholder="Enter any parameters needed")
 
-    params = []
+    positional_params = []
+    optional_params = []
     inputs = script_info['inputs_needed']
 
     st.markdown("### 📋 Fill out these details:")
@@ -79,6 +80,7 @@ def create_guided_form(script_path, script_info):
     for input_name, input_config in inputs.items():
         label = input_config.get('label', input_name.replace('_', ' ').title())
         help_text = input_config.get('help', '')
+        arg_type = input_config.get('argument_type', 'optional')  # Default to optional for backwards compatibility
 
         # Handle different input types
         if 'options' in input_config:
@@ -98,16 +100,28 @@ def create_guided_form(script_path, script_info):
                 # Simple options
                 selected_value = st.selectbox(label, options_list, help=help_text)
 
-            params.append(f"--{input_name} {selected_value}")
+            # Add to appropriate parameter list based on argument type
+            if arg_type == "positional":
+                positional_params.append(selected_value)
+            else:
+                optional_params.append(f"--{input_name} {selected_value}")
 
         else:
             # Text input
             placeholder = input_config.get('placeholder', '')
+            required = input_config.get('required', False)
             value = st.text_input(label, placeholder=placeholder, help=help_text)
-            if value:
-                params.append(f"--{input_name} \"{value}\"")
 
-    return " ".join(params)
+            if value or required:  # Include if value provided or if required
+                if arg_type == "positional":
+                    positional_params.append(f'"{value}"' if value else '""')
+                else:
+                    if value:  # Only add optional params if they have values
+                        optional_params.append(f"--{input_name} \"{value}\"")
+
+    # Combine positional arguments first, then optional arguments
+    all_params = positional_params + optional_params
+    return " ".join(all_params)
 
 def show_marketing_tutorial():
     """Display marketing tools tutorial"""
