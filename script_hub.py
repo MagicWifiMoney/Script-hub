@@ -241,12 +241,19 @@ with tab1:
                             else:
                                 # Handle simple format or guided form
                                 if params.strip():
-                                    if params.startswith('--'):
-                                        # Already formatted arguments
-                                        cmd = ["python3", selected_script] + params.split()
-                                    else:
-                                        # Simple parameters - pass as positional
-                                        cmd = ["python3", selected_script] + params.split()
+                                    # Use shlex.split to properly handle quoted arguments
+                                    import shlex
+                                    try:
+                                        parsed_args = shlex.split(params)
+                                        cmd = ["python3", selected_script] + parsed_args
+                                    except ValueError:
+                                        # Fallback to simple split if shlex fails
+                                        if params.startswith('--'):
+                                            # Already formatted arguments
+                                            cmd = ["python3", selected_script] + params.split()
+                                        else:
+                                            # Simple parameters - pass as positional
+                                            cmd = ["python3", selected_script] + params.split()
                                 else:
                                     cmd = ["python3", selected_script, "--help"]
 
