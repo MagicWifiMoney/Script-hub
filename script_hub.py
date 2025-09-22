@@ -13,6 +13,7 @@ import glob
 from pathlib import Path
 import importlib.util
 import traceback
+import shlex
 
 # Import our helper modules
 try:
@@ -25,6 +26,21 @@ try:
     MARKETING_HELPERS_AVAILABLE = True
 except ImportError:
     MARKETING_HELPERS_AVAILABLE = False
+
+def parse_script_arguments(params):
+    """
+    Parse script parameters with proper handling of quoted arguments.
+    Returns a list of arguments ready for subprocess.
+    """
+    if not params.strip():
+        return []
+
+    try:
+        # Use shlex.split for proper shell-like argument parsing
+        return shlex.split(params)
+    except ValueError:
+        # Fallback to simple split if shlex fails
+        return params.split()
 
 # Page config
 st.set_page_config(
@@ -211,12 +227,9 @@ with tab1:
                             if input_method == "guided_form":
                                 # Handle guided form params (already formatted by create_guided_form)
                                 if params.strip():
-                                    if params.startswith('--'):
-                                        # Already formatted arguments
-                                        cmd = ["python3", selected_script] + params.split()
-                                    else:
-                                        # Simple parameters - pass as positional
-                                        cmd = ["python3", selected_script] + params.split()
+                                    # Use helper function for proper argument parsing
+                                    parsed_args = parse_script_arguments(params)
+                                    cmd = ["python3", selected_script] + parsed_args
                                 else:
                                     cmd = ["python3", selected_script, "--help"]
                             elif input_method == "JSON" and params.strip():
@@ -241,19 +254,9 @@ with tab1:
                             else:
                                 # Handle simple format or guided form
                                 if params.strip():
-                                    # Use shlex.split to properly handle quoted arguments
-                                    import shlex
-                                    try:
-                                        parsed_args = shlex.split(params)
-                                        cmd = ["python3", selected_script] + parsed_args
-                                    except ValueError:
-                                        # Fallback to simple split if shlex fails
-                                        if params.startswith('--'):
-                                            # Already formatted arguments
-                                            cmd = ["python3", selected_script] + params.split()
-                                        else:
-                                            # Simple parameters - pass as positional
-                                            cmd = ["python3", selected_script] + params.split()
+                                    # Use helper function for consistent argument parsing
+                                    parsed_args = parse_script_arguments(params)
+                                    cmd = ["python3", selected_script] + parsed_args
                                 else:
                                     cmd = ["python3", selected_script, "--help"]
 
