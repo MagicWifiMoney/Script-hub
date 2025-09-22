@@ -7,6 +7,7 @@ import json
 import os
 import streamlit as st
 from pathlib import Path
+from datetime import datetime
 
 def load_marketing_catalog():
     """Load the marketing tools catalog with descriptions"""
@@ -257,7 +258,6 @@ def display_seo_analysis_results(output_text: str):
 
 def _display_structured_seo_results(results: dict):
     """Display structured SEO results from JSON"""
-    from datetime import datetime
 
     st.markdown("## 🎯 SEO Analysis Results")
 
