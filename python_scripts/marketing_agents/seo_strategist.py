@@ -1,163 +1,241 @@
 #!/usr/bin/env python3
 """
-SEO Strategist Marketing Agent
+Autonomous SEO Strategist Marketing Agent
 Script Hub Integration - Marketing Category
+
+Provides real-time SEO analysis using multiple APIs:
+- DataForSEO for technical analysis
+- Keywords Everywhere for keyword data
+- Claude/ChatGPT/Perplexity for AI insights
 
 Usage:
 - website_url: Website to analyze
 - analysis_type: quick, comprehensive, technical, or local (default: quick)
 - client_name: Optional client name for personalized output
+- ai_provider: AI provider (anthropic, openai, perplexity) - optional
 """
 
 import sys
 import os
 import json
 import argparse
+import time
 from pathlib import Path
+from datetime import datetime
 
-# Add the parent directory to path to access prompts
+# Add the parent directory to path to access analysis engine
 script_dir = Path(__file__).parent
-project_root = script_dir.parent
-prompts_dir = project_root / "prompts"
+project_root = script_dir.parent.parent  # Go up two levels to reach Script-hub root
+sys.path.append(str(project_root))
 
-def load_agent_prompt(prompt_file="seo-strategist.md"):
-    """Load the SEO strategist prompt template"""
-    prompt_path = prompts_dir / prompt_file
-    if prompt_path.exists():
-        with open(prompt_path, 'r', encoding='utf-8') as f:
-            return f.read()
-    else:
-        return """
-# SEO Strategist Agent
-You are an expert SEO strategist. Analyze the provided website and provide actionable recommendations.
+try:
+    from seo_analysis_engine import analyze_website_seo
+except ImportError as e:
+    print(f"❌ Error: Could not import SEO analysis engine: {e}")
+    print("Make sure you have set up your .env file with API keys.")
+    sys.exit(1)
 
-## Analysis Framework:
-1. Technical SEO Assessment
-2. On-Page Optimization
-3. Content Strategy
-4. Local SEO (if applicable)
-5. Competitive Analysis
-6. Priority Action Items
-"""
+def format_seo_results_for_display(results: dict) -> str:
+    """Format SEO analysis results for user-friendly display"""
+    output = []
 
-def format_seo_analysis(website_url, analysis_type, client_name=None):
-    """Format the SEO analysis request"""
+    # Header
+    output.append("=" * 70)
+    output.append("🎯 AUTONOMOUS SEO ANALYSIS COMPLETE")
+    output.append("=" * 70)
+    output.append("")
 
-    client_prefix = f"[Client: {client_name}] " if client_name else ""
+    # Basic info
+    client_info = f"Client: {results.get('client_name', 'N/A')}" if results.get('client_name') else ""
+    output.append(f"🌐 Website: {results.get('website_url', 'N/A')}")
+    if client_info:
+        output.append(f"👤 {client_info}")
+    output.append(f"📊 Analysis Type: {results.get('analysis_type', 'N/A').title()}")
+    output.append(f"⏱️  Analysis Duration: {results.get('analysis_duration', 'N/A')}s")
+    output.append(f"🕒 Timestamp: {results.get('timestamp', 'N/A')}")
+    output.append("")
 
-    analysis_templates = {
-        "quick": """
-🔍 QUICK SEO ANALYSIS REQUEST
+    # SEO Score
+    seo_score = results.get('seo_score')
+    if seo_score is not None:
+        score_emoji = "🟢" if seo_score >= 80 else "🟡" if seo_score >= 60 else "🔴"
+        output.append(f"📈 SEO SCORE: {score_emoji} {seo_score}/100")
+        output.append("")
 
-{client_prefix}Website: {website_url}
+    # Technical Data Summary
+    basic_data = results.get('technical_data', {}).get('basic', {})
+    if basic_data:
+        output.append("🔧 QUICK TECHNICAL OVERVIEW:")
+        output.append(f"   ✅ HTTPS: {'Yes' if basic_data.get('https') else 'No'}")
+        output.append(f"   ✅ Mobile Friendly: {'Yes' if basic_data.get('responsive') else 'No'}")
+        output.append(f"   ⚡ Load Time: {basic_data.get('load_time', 'N/A')}s")
+        output.append(f"   📄 Page Title: {'Present' if basic_data.get('title') else 'Missing'}")
+        output.append(f"   📝 Meta Description: {'Present' if basic_data.get('meta_description') else 'Missing'}")
+        output.append("")
 
-Please provide:
-1. 🏠 Homepage SEO Score (0-100)
-2. 🔧 Top 3 Technical Issues
-3. 📝 Content Opportunities (3 items)
-4. 🎯 Priority Keywords (5 suggestions)
-5. ⚡ Quick Wins (3 actionable items)
-""",
-        "comprehensive": """
-🔍 COMPREHENSIVE SEO AUDIT REQUEST
+    # AI Analysis
+    if results.get('analysis'):
+        output.append("🤖 AI-POWERED ANALYSIS:")
+        output.append(results['analysis'])
+        output.append("")
 
-{client_prefix}Website: {website_url}
+    # Recommendations
+    recommendations = results.get('recommendations', [])
+    if recommendations:
+        output.append("⚡ PRIORITY RECOMMENDATIONS:")
+        for i, rec in enumerate(recommendations[:8], 1):  # Show top 8
+            priority_emoji = "🚨" if rec.get('priority') == 'High' else "⚠️" if rec.get('priority') == 'Medium' else "ℹ️"
+            output.append(f"{i}. {priority_emoji} [{rec.get('category', 'General')}] {rec.get('recommendation', 'N/A')}")
+            output.append(f"   Impact: {rec.get('impact', 'N/A')}")
+            output.append("")
 
-Please provide detailed analysis:
-1. 🏗️ Technical SEO Audit (Core Web Vitals, crawlability, indexing)
-2. 📊 On-Page Analysis (titles, meta, headers, content)
-3. 🌐 Local SEO Assessment (if applicable)
-4. 🔗 Backlink Profile Overview
-5. 📱 Mobile Experience Review
-6. 🎯 Keyword Strategy (primary & secondary)
-7. 🏆 Competitive Analysis (top 3 competitors)
-8. 📋 30-Day Action Plan (prioritized)
-""",
-        "technical": """
-🔧 TECHNICAL SEO ANALYSIS REQUEST
+    # Keyword Opportunities
+    keyword_data = results.get('keyword_data', {})
+    opportunities = keyword_data.get('opportunities', [])
+    if opportunities:
+        output.append("🎯 KEYWORD OPPORTUNITIES:")
+        for kw in opportunities[:5]:  # Show top 5
+            if isinstance(kw, dict):
+                kw_name = kw.get('keyword', kw.get('kw', 'Unknown'))
+                volume = kw.get('vol', kw.get('search_volume', 'N/A'))
+                output.append(f"   • {kw_name} (Volume: {volume})")
+        output.append("")
 
-{client_prefix}Website: {website_url}
+    # Data Sources
+    if results.get('technical_data'):
+        sources = []
+        if 'dataforseo_domain' in results['technical_data']:
+            sources.append("DataForSEO")
+        if keyword_data:
+            sources.append("Keywords Everywhere")
+        if results.get('competitive_data'):
+            sources.append("Perplexity")
+        if results.get('analysis'):
+            sources.append("Claude AI")
 
-Focus on technical aspects:
-1. ⚡ Site Speed & Core Web Vitals
-2. 🏗️ Site Architecture & URL Structure
-3. 📱 Mobile Responsiveness
-4. 🔍 Crawlability & Indexing
-5. 📊 Schema Markup Opportunities
-6. 🛡️ Security (HTTPS, redirects)
-7. 🔧 Technical Quick Fixes
-""",
-        "local": """
-📍 LOCAL SEO ANALYSIS REQUEST
+        if sources:
+            output.append(f"📡 Data Sources: {', '.join(sources)}")
+            output.append("")
 
-{client_prefix}Website: {website_url}
+    # Errors (if any)
+    errors = results.get('errors', [])
+    if errors:
+        output.append("⚠️ ANALYSIS WARNINGS:")
+        for error in errors:
+            output.append(f"   • {error}")
+        output.append("")
 
-Focus on local search optimization:
-1. 🎯 Google My Business Optimization
-2. 📍 Local Citation Audit
-3. ⭐ Review Management Strategy
-4. 🌐 Local Keyword Opportunities
-5. 📱 Mobile Local Experience
-6. 🏪 Local Competition Analysis
-7. 📋 Local SEO Action Plan
-"""
-    }
+    # Footer
+    output.append("=" * 70)
+    output.append("🎉 ANALYSIS COMPLETE - Results ready for action!")
+    output.append("💡 Use these insights to improve your website's SEO performance.")
+    output.append("=" * 70)
 
-    template = analysis_templates.get(analysis_type, analysis_templates["quick"])
-    return template.format(
-        client_prefix=client_prefix,
-        website_url=website_url
-    )
+    return "\n".join(output)
+
+def save_analysis_results(results: dict, output_dir: str = "seo_reports") -> str:
+    """Save analysis results to JSON file for later use"""
+    try:
+        # Create output directory
+        output_path = Path(output_dir)
+        output_path.mkdir(exist_ok=True)
+
+        # Generate filename
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        domain = results.get('website_url', 'unknown').replace('https://', '').replace('http://', '').split('/')[0]
+        filename = f"seo_analysis_{domain}_{timestamp}.json"
+
+        # Save results
+        filepath = output_path / filename
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+
+        return str(filepath)
+    except Exception as e:
+        return f"Error saving results: {e}"
 
 def main():
-    parser = argparse.ArgumentParser(description='SEO Strategist Marketing Agent')
+    parser = argparse.ArgumentParser(description='Autonomous SEO Strategist Marketing Agent')
     parser.add_argument('website_url', help='Website URL to analyze')
     parser.add_argument('--analysis_type', choices=['quick', 'comprehensive', 'technical', 'local'],
                         default='quick', help='Type of SEO analysis')
     parser.add_argument('--client_name', help='Client name for personalized output')
-    parser.add_argument('--output_format', choices=['markdown', 'json', 'text'],
-                        default='markdown', help='Output format')
+    parser.add_argument('--ai_provider', choices=['anthropic', 'openai', 'perplexity'],
+                        help='AI provider for analysis (default from .env)')
+    parser.add_argument('--output_format', choices=['display', 'json', 'save'],
+                        default='display', help='Output format')
+    parser.add_argument('--save_results', action='store_true',
+                        help='Save results to JSON file')
 
     args = parser.parse_args()
 
-    # Load the agent prompt (for future AI integration)
-    agent_prompt = load_agent_prompt()
+    # Show startup message
+    print("🚀 AUTONOMOUS SEO STRATEGIST STARTING...")
+    print(f"🌐 Analyzing: {args.website_url}")
+    print(f"📊 Analysis Type: {args.analysis_type.title()}")
 
-    # Generate analysis request
-    analysis_request = format_seo_analysis(
-        args.website_url,
-        args.analysis_type,
-        args.client_name
-    )
+    if args.client_name:
+        print(f"👤 Client: {args.client_name}")
 
-    # For now, output the structured analysis request
-    # In production, this would be sent to Claude/OpenAI API
-    print("=" * 60)
-    print("🎯 SEO STRATEGIST AGENT ACTIVATED")
-    print("=" * 60)
+    print("⏳ This may take 30-60 seconds for comprehensive analysis...")
     print()
-    print(analysis_request)
-    print()
-    print("=" * 60)
-    print("📋 NEXT STEPS:")
-    print("1. Copy this analysis request to your AI assistant (Claude/ChatGPT)")
-    print("2. Paste the AI response into Script Hub for further processing")
-    print("3. Use the report generation tools for client deliverables")
-    print("=" * 60)
 
-    # Output metadata for Script Hub
-    metadata = {
-        "agent": "seo_strategist",
-        "website": args.website_url,
-        "analysis_type": args.analysis_type,
-        "client": args.client_name,
-        "timestamp": "2024-01-01",  # In production, use actual timestamp
-        "status": "analysis_ready"
-    }
+    try:
+        # Run the autonomous SEO analysis
+        start_time = time.time()
 
-    if args.output_format == 'json':
-        print("\n🔧 SCRIPT METADATA:")
-        print(json.dumps(metadata, indent=2))
+        results = analyze_website_seo(
+            website_url=args.website_url,
+            analysis_type=args.analysis_type,
+            client_name=args.client_name,
+            ai_provider=args.ai_provider
+        )
+
+        analysis_time = time.time() - start_time
+
+        # Handle different output formats
+        if args.output_format == 'json':
+            print(json.dumps(results, indent=2, ensure_ascii=False))
+        elif args.output_format == 'save' or args.save_results:
+            # Save to file and display summary
+            filepath = save_analysis_results(results)
+            print(f"✅ Results saved to: {filepath}")
+            print()
+            # Also show summary
+            print(format_seo_results_for_display(results))
+        else:
+            # Default display format
+            print(format_seo_results_for_display(results))
+
+        # Show success message
+        print(f"\n✅ Analysis completed successfully in {analysis_time:.1f} seconds!")
+
+        # Show data sources used
+        if results.get('technical_data') or results.get('keyword_data'):
+            print("\n📊 Real data collected from:")
+            if results.get('technical_data', {}).get('basic'):
+                print("   • Website crawling and technical analysis")
+            if 'dataforseo' in str(results.get('technical_data', {})):
+                print("   • DataForSEO API (domain authority, backlinks)")
+            if results.get('keyword_data'):
+                print("   • Keywords Everywhere API (search volume, competition)")
+            if results.get('competitive_data'):
+                print("   • Perplexity AI (competitive analysis)")
+            if results.get('analysis'):
+                ai_provider = args.ai_provider or os.getenv('DEFAULT_AI_PROVIDER', 'Claude')
+                print(f"   • {ai_provider.title()} AI (insights and recommendations)")
+
+    except KeyboardInterrupt:
+        print("\n❌ Analysis interrupted by user.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n❌ Analysis failed: {str(e)}")
+        print("\n🔧 Troubleshooting:")
+        print("1. Check your .env file has the required API keys")
+        print("2. Verify the website URL is accessible")
+        print("3. Ensure you have an internet connection")
+        print("4. Check API rate limits and quotas")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

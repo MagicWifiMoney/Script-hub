@@ -182,6 +182,192 @@ def display_success_stories():
             st.markdown(f"**Result:** {story['result']}")
             st.markdown(f"💡 **Tip:** {story['tip']}")
 
+def display_seo_analysis_results(output_text: str):
+    """Parse and display SEO analysis results in a rich format"""
+
+    # Check if this looks like JSON output
+    try:
+        if output_text.strip().startswith('{'):
+            results = json.loads(output_text)
+            _display_structured_seo_results(results)
+            return
+    except:
+        pass
+
+    # Parse text output for key information
+    lines = output_text.split('\n')
+
+    # Look for key sections in the output
+    seo_score = None
+    for line in lines:
+        if 'SEO SCORE:' in line:
+            # Extract score
+            try:
+                import re
+                score_match = re.search(r'(\d+)/100', line)
+                if score_match:
+                    seo_score = int(score_match.group(1))
+            except:
+                pass
+            break
+
+    # Display SEO score prominently if found
+    if seo_score is not None:
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if seo_score >= 80:
+                st.success(f"🟢 SEO Score: {seo_score}/100")
+            elif seo_score >= 60:
+                st.warning(f"🟡 SEO Score: {seo_score}/100")
+            else:
+                st.error(f"🔴 SEO Score: {seo_score}/100")
+
+    # Display the full output with syntax highlighting
+    st.markdown("### 📊 Complete Analysis Results")
+
+    # Check if it's a structured analysis
+    if "AUTONOMOUS SEO ANALYSIS COMPLETE" in output_text:
+        # It's our structured output, display with better formatting
+        st.code(output_text, language='text')
+
+        # Add download button for results
+        st.download_button(
+            label="📥 Download Analysis Report",
+            data=output_text,
+            file_name=f"seo_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+            mime="text/plain"
+        )
+
+        # Show data sources if available
+        if "Real data collected from:" in output_text:
+            st.success("✅ This analysis used real data from multiple APIs!")
+            with st.expander("ℹ️ About the Data Sources"):
+                st.markdown("""
+                This autonomous SEO analysis collected real data from:
+                - **Website crawling**: Technical analysis of your site
+                - **DataForSEO API**: Domain authority and backlink data
+                - **Keywords Everywhere API**: Search volume and keyword competition
+                - **AI Analysis**: Claude/ChatGPT for insights and recommendations
+
+                This is much more accurate than generic SEO advice!
+                """)
+    else:
+        # Standard output display
+        st.code(output_text, language='text')
+
+def _display_structured_seo_results(results: dict):
+    """Display structured SEO results from JSON"""
+    from datetime import datetime
+
+    st.markdown("## 🎯 SEO Analysis Results")
+
+    # Basic info
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Website", results.get('website_url', 'N/A'))
+        st.metric("Analysis Type", results.get('analysis_type', 'N/A').title())
+    with col2:
+        if results.get('client_name'):
+            st.metric("Client", results['client_name'])
+        st.metric("Analysis Duration", f"{results.get('analysis_duration', 'N/A')}s")
+
+    # SEO Score
+    seo_score = results.get('seo_score')
+    if seo_score is not None:
+        if seo_score >= 80:
+            st.success(f"🟢 Excellent SEO Score: {seo_score}/100")
+        elif seo_score >= 60:
+            st.warning(f"🟡 Good SEO Score: {seo_score}/100")
+        else:
+            st.error(f"🔴 Needs Improvement: {seo_score}/100")
+
+    # Technical overview
+    basic_data = results.get('technical_data', {}).get('basic', {})
+    if basic_data:
+        st.markdown("### 🔧 Technical Overview")
+
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            https_status = "✅" if basic_data.get('https') else "❌"
+            st.metric("HTTPS", https_status)
+        with col2:
+            mobile_status = "✅" if basic_data.get('responsive') else "❌"
+            st.metric("Mobile", mobile_status)
+        with col3:
+            load_time = basic_data.get('load_time', 0)
+            st.metric("Load Time", f"{load_time}s")
+        with col4:
+            title_status = "✅" if basic_data.get('title') else "❌"
+            st.metric("Title", title_status)
+        with col5:
+            desc_status = "✅" if basic_data.get('meta_description') else "❌"
+            st.metric("Meta Desc", desc_status)
+
+    # AI Analysis
+    if results.get('analysis'):
+        st.markdown("### 🤖 AI Analysis")
+        st.markdown(results['analysis'])
+
+    # Recommendations
+    recommendations = results.get('recommendations', [])
+    if recommendations:
+        st.markdown("### ⚡ Priority Recommendations")
+
+        for i, rec in enumerate(recommendations[:6], 1):
+            priority = rec.get('priority', 'Medium')
+            if priority == 'High':
+                st.error(f"**{i}. [{rec.get('category', 'General')}]** {rec.get('recommendation', 'N/A')}")
+            elif priority == 'Medium':
+                st.warning(f"**{i}. [{rec.get('category', 'General')}]** {rec.get('recommendation', 'N/A')}")
+            else:
+                st.info(f"**{i}. [{rec.get('category', 'General')}]** {rec.get('recommendation', 'N/A')}")
+
+            if rec.get('impact'):
+                st.caption(f"Impact: {rec['impact']}")
+
+    # Keyword opportunities
+    keyword_data = results.get('keyword_data', {})
+    opportunities = keyword_data.get('opportunities', [])
+    if opportunities:
+        st.markdown("### 🎯 Keyword Opportunities")
+
+        for kw in opportunities[:5]:
+            if isinstance(kw, dict):
+                kw_name = kw.get('keyword', kw.get('kw', 'Unknown'))
+                volume = kw.get('vol', kw.get('search_volume', 'N/A'))
+                st.markdown(f"• **{kw_name}** (Volume: {volume})")
+
+    # Download options
+    st.markdown("### 📥 Export Options")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.download_button(
+            label="📊 Download JSON Report",
+            data=json.dumps(results, indent=2),
+            file_name=f"seo_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
+            mime="application/json"
+        )
+
+    with col2:
+        # Create text summary
+        summary = f"""
+SEO Analysis Report
+==================
+Website: {results.get('website_url', 'N/A')}
+SEO Score: {results.get('seo_score', 'N/A')}/100
+Analysis Date: {results.get('timestamp', 'N/A')}
+
+Key Recommendations:
+{chr(10).join([f"• {rec.get('recommendation', 'N/A')}" for rec in recommendations[:5]])}
+"""
+        st.download_button(
+            label="📝 Download Text Summary",
+            data=summary,
+            file_name=f"seo_summary_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+            mime="text/plain"
+        )
+
 def show_marketing_categories():
     """Display marketing tools organized by category"""
     catalog = load_marketing_catalog()

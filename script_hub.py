@@ -20,7 +20,7 @@ try:
     from marketing_helper import (
         load_marketing_catalog, get_script_info,
         display_marketing_tool_card, create_guided_form,
-        show_marketing_categories
+        show_marketing_categories, display_seo_analysis_results
     )
     from welcome import show_welcome_screen, show_first_time_tips
     MARKETING_HELPERS_AVAILABLE = True
@@ -222,7 +222,12 @@ with tab1:
                 # Run button
                 if st.button("🚀 Run Analysis", type="primary", use_container_width=True):
                     try:
-                        with st.spinner("Running your marketing analysis..."):
+                        # Show different progress messages based on the tool
+                        progress_msg = "Running your marketing analysis..."
+                        if "seo_strategist.py" in selected_script:
+                            progress_msg = "🔍 Analyzing website... This may take 30-60 seconds for real SEO data collection..."
+
+                        with st.spinner(progress_msg):
                             # Build command
                             if input_method == "guided_form":
                                 # Handle guided form params (already formatted by create_guided_form)
@@ -327,10 +332,18 @@ with tab1:
                     with st.expander("📋 What to do next"):
                         st.markdown(script_info['next_steps'])
 
-            # Display output
+            # Display output - use special handling for SEO Strategist
             output_container = st.container()
             with output_container:
-                st.code(st.session_state.script_output, language="text")
+                if (MARKETING_HELPERS_AVAILABLE and selected_script and
+                    "seo_strategist.py" in selected_script and
+                    ("AUTONOMOUS SEO ANALYSIS COMPLETE" in st.session_state.script_output or
+                     st.session_state.script_output.strip().startswith('{'))):
+                    # Use rich SEO analysis display
+                    display_seo_analysis_results(st.session_state.script_output)
+                else:
+                    # Standard code display
+                    st.code(st.session_state.script_output, language="text")
 
             # Quick actions
             col1, col2, col3 = st.columns(3)

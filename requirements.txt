@@ -44,13 +44,16 @@ pytest>=7.4.0             # Testing framework
 cryptography>=41.0.0       # Secure credential handling
 cachetools>=5.3.0          # Caching for performance
 
+# SEO Analysis Engine - Additional Dependencies
+lxml>=4.9.0                 # XML/HTML parsing for web scraping
+selenium>=4.15.0            # Web automation for advanced analysis
+webdriver-manager>=4.0.0    # Chrome driver management
+
 # Optional Dependencies (will be imported with try/except in scripts)
 # notion-client>=2.2.1       # Notion API integration
 # google-api-python-client>=2.100.0  # Google APIs (Analytics, Search Console)
 # google-auth-oauthlib>=1.0.0        # Google OAuth
 # google-auth-httplib2>=0.2.0        # Google Auth HTTP
-# selenium>=4.15.0           # Web automation for research
-# webdriver-manager>=4.0.0   # Chrome driver management
 # tweepy>=4.14.0             # Twitter API
 # facebook-sdk>=3.1.0        # Facebook Graph API
 # instagrapi>=1.19.0         # Instagram API
