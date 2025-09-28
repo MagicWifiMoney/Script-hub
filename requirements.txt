@@ -8,6 +8,7 @@ requests>=2.31.0
 beautifulsoup4>=4.12.0
 pyarrow>=10.0.0
 altair>=4.2.0
+plotly>=5.17.0              # Premium data visualizations
 gitpython>=3.1.0
 pillow>=9.5.0
 pydeck>=0.8.0
@@ -43,6 +44,7 @@ pytest>=7.4.0             # Testing framework
 # Security & Performance
 cryptography>=41.0.0       # Secure credential handling
 cachetools>=5.3.0          # Caching for performance
+psutil>=5.9.0               # System monitoring and process management
 
 # SEO Analysis Engine - Additional Dependencies
 lxml>=4.9.0                 # XML/HTML parsing for web scraping

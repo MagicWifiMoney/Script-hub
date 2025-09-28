@@ -23,9 +23,19 @@ try:
         show_marketing_categories, display_seo_analysis_results
     )
     from welcome import show_welcome_screen, show_first_time_tips
+    from premium_ui import (
+        apply_premium_theme, premium_header, premium_metrics_row,
+        premium_tool_card, premium_loading_animation, premium_success_banner,
+        premium_dashboard_stats, premium_feature_spotlight
+    )
+    from client_intelligence import ClientIntelligenceSystem
     MARKETING_HELPERS_AVAILABLE = True
-except ImportError:
+    PREMIUM_UI_AVAILABLE = True
+    CLIENT_INTELLIGENCE_AVAILABLE = True
+except ImportError as e:
     MARKETING_HELPERS_AVAILABLE = False
+    PREMIUM_UI_AVAILABLE = False
+    CLIENT_INTELLIGENCE_AVAILABLE = False
 
 def parse_script_arguments(params):
     """
@@ -44,10 +54,15 @@ def parse_script_arguments(params):
 
 # Page config
 st.set_page_config(
-    page_title="Script Hub - Marketing Automation",
-    page_icon="🎯",
-    layout="wide"
+    page_title="⚡ Fermat AI Marketing Hub",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
+
+# Apply premium theme
+if PREMIUM_UI_AVAILABLE:
+    apply_premium_theme()
 
 # Initialize session state
 if 'script_output' not in st.session_state:
@@ -60,9 +75,18 @@ if 'show_welcome' not in st.session_state:
     st.session_state.show_welcome = True
 if 'first_visit' not in st.session_state:
     st.session_state.first_visit = True
+if 'selected_client_id' not in st.session_state:
+    st.session_state.selected_client_id = None
+if 'client_intelligence' not in st.session_state and CLIENT_INTELLIGENCE_AVAILABLE:
+    st.session_state.client_intelligence = ClientIntelligenceSystem()
 
-# Header
-st.title("🎯 Script Hub - Marketing Automation Made Simple")
+# Premium Header
+if PREMIUM_UI_AVAILABLE:
+    premium_header()
+    premium_dashboard_stats()
+    premium_feature_spotlight()
+else:
+    st.title("🎯 Script Hub - Marketing Automation Made Simple")
 
 # Show welcome screen for first-time users
 if st.session_state.show_welcome and MARKETING_HELPERS_AVAILABLE:
@@ -84,13 +108,155 @@ if MARKETING_HELPERS_AVAILABLE and st.session_state.first_visit:
     show_first_time_tips()
 
 # Create tabs
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "🚀 Marketing Tools",
-    "✏️ Edit Output",
-    "📚 Tool Library",
-    "📜 History",
-    "❓ Help & Guide"
-])
+if CLIENT_INTELLIGENCE_AVAILABLE:
+    tab0, tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "👥 Client Dashboard",
+        "🚀 Marketing Tools",
+        "✏️ Edit Output",
+        "📚 Tool Library",
+        "📜 History",
+        "❓ Help & Guide"
+    ])
+else:
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "🚀 Marketing Tools",
+        "✏️ Edit Output",
+        "📚 Tool Library",
+        "📜 History",
+        "❓ Help & Guide"
+    ])
+
+# Client Dashboard Tab
+if CLIENT_INTELLIGENCE_AVAILABLE:
+    with tab0:
+        st.markdown("### 👥 Smart Client Management")
+        st.markdown("Build detailed client profiles automatically from website URLs for better marketing insights.")
+
+        # Client onboarding section
+        st.markdown("#### 🚀 Quick Client Onboarding")
+
+        col1, col2 = st.columns([2, 1])
+
+        with col1:
+            # New client form
+            with st.form("new_client_form"):
+                st.markdown("**Add New Client**")
+                website_url = st.text_input("Website URL", placeholder="https://example.com")
+                client_name = st.text_input("Client Name (Optional)", placeholder="Leave blank to auto-detect")
+
+                submitted = st.form_submit_button("🔍 Create Client Profile", type="primary")
+
+                if submitted and website_url:
+                    with st.spinner("🤖 Building comprehensive client profile... This may take 2-3 minutes"):
+                        try:
+                            result = st.session_state.client_intelligence.create_client_from_website(
+                                website_url, client_name if client_name else None
+                            )
+
+                            if result["success"]:
+                                st.success(f"✅ Successfully created profile for {result['client_name']}")
+                                st.session_state.selected_client_id = result["client_id"]
+
+                                # Show profile summary
+                                with st.expander("📊 Client Profile Summary", expanded=True):
+                                    profile = result["client_profile"]
+                                    st.markdown(f"**Industry:** {profile.get('industry', 'Unknown')}")
+                                    st.markdown(f"**Business Type:** {profile.get('business_type', 'Unknown')}")
+                                    st.markdown(f"**Target Audience:** {profile.get('target_audience', 'Not specified')}")
+
+                                    if profile.get('key_services'):
+                                        services = profile['key_services'][:3]  # Show first 3
+                                        st.markdown(f"**Key Services:** {', '.join(services)}")
+
+                                    if profile.get('competitive_advantages'):
+                                        advantages = profile['competitive_advantages'][:2]  # Show first 2
+                                        st.markdown(f"**Competitive Advantages:** {', '.join(advantages)}")
+
+                                # Show recommendations
+                                if result.get("smart_recommendations"):
+                                    with st.expander("💡 Smart Marketing Recommendations"):
+                                        for rec in result["smart_recommendations"][:5]:
+                                            st.markdown(f"• {rec}")
+
+                            else:
+                                st.error(f"❌ Failed to create profile: {result.get('error', 'Unknown error')}")
+
+                        except Exception as e:
+                            st.error(f"❌ Error: {str(e)}")
+
+        with col2:
+            # Existing clients list
+            st.markdown("**Existing Clients**")
+            try:
+                clients = st.session_state.client_intelligence.list_clients()
+
+                if clients:
+                    for client in clients[:5]:  # Show first 5
+                        client_display = f"{client['name']} ({client['domain']})"
+                        if st.button(client_display, key=f"select_{client['id']}", use_container_width=True):
+                            st.session_state.selected_client_id = client['id']
+                            st.success(f"Selected: {client['name']}")
+                else:
+                    st.info("No clients yet. Add your first client above!")
+
+            except Exception as e:
+                st.warning("Client database not initialized yet")
+
+        # Selected client details
+        if st.session_state.selected_client_id:
+            try:
+                client_profile = st.session_state.client_intelligence.get_client_profile(
+                    st.session_state.selected_client_id
+                )
+
+                if client_profile:
+                    st.markdown("---")
+                    st.markdown(f"### 📋 Active Client: {client_profile['name']}")
+
+                    # Client profile tabs
+                    profile_tab1, profile_tab2, profile_tab3 = st.tabs([
+                        "📊 Profile Overview",
+                        "🎯 Recommendations",
+                        "📈 Campaign History"
+                    ])
+
+                    with profile_tab1:
+                        col1, col2 = st.columns(2)
+
+                        with col1:
+                            st.markdown("**Business Info**")
+                            st.markdown(f"**Domain:** {client_profile['domain']}")
+                            st.markdown(f"**Industry:** {client_profile.get('industry', 'Unknown')}")
+                            st.markdown(f"**Type:** {client_profile.get('business_type', 'Unknown')}")
+
+                            if client_profile.get('location'):
+                                st.markdown(f"**Location:** {client_profile['location']}")
+
+                        with col2:
+                            st.markdown("**Marketing Context**")
+                            st.markdown(f"**Target Audience:** {client_profile.get('target_audience', 'Not specified')}")
+
+                            if client_profile.get('key_services'):
+                                services = client_profile['key_services'][:3]
+                                st.markdown(f"**Services:** {', '.join(services)}")
+
+                    with profile_tab2:
+                        # Get fresh recommendations
+                        recommendations = st.session_state.client_intelligence.get_client_recommendations(
+                            st.session_state.selected_client_id
+                        )
+
+                        if recommendations:
+                            for i, rec in enumerate(recommendations[:8], 1):
+                                st.markdown(f"{i}. {rec}")
+                        else:
+                            st.info("No recommendations available yet")
+
+                    with profile_tab3:
+                        st.info("Campaign history feature coming soon")
+
+            except Exception as e:
+                st.error(f"Error loading client profile: {str(e)}")
 
 with tab1:
     col1, col2 = st.columns([1, 2])
@@ -194,7 +360,18 @@ with tab1:
 
                 if MARKETING_HELPERS_AVAILABLE and selected_script in marketing_files:
                     script_info = get_script_info(selected_script)
-                    params = create_guided_form(selected_script, script_info)
+
+                    # Get client profile for context-aware forms
+                    client_profile = None
+                    if CLIENT_INTELLIGENCE_AVAILABLE and st.session_state.selected_client_id:
+                        try:
+                            client_profile = st.session_state.client_intelligence.get_client_profile(
+                                st.session_state.selected_client_id
+                            )
+                        except:
+                            pass
+
+                    params = create_guided_form(selected_script, script_info, client_profile)
                 else:
                     # Fallback to simple input
                     input_method = st.radio(

@@ -65,12 +65,28 @@ def display_marketing_tool_card(script_path, script_info):
         if 'next_steps' in script_info:
             st.markdown(f"**Next steps:** {script_info['next_steps']}")
 
-def create_guided_form(script_path, script_info):
-    """Create user-friendly form for script parameters"""
+def create_guided_form(script_path, script_info, selected_client_profile=None):
+    """Create user-friendly form for script parameters with optional client context"""
 
     if 'inputs_needed' not in script_info:
         # Fall back to simple input for scripts without guided forms
         return st.text_input("Parameters:", placeholder="Enter any parameters needed")
+
+    # Show client context if available
+    if selected_client_profile:
+        with st.expander("🎯 Using Client Context", expanded=False):
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"**Client:** {selected_client_profile.get('name', 'Unknown')}")
+                st.markdown(f"**Domain:** {selected_client_profile.get('domain', 'Unknown')}")
+                st.markdown(f"**Industry:** {selected_client_profile.get('industry', 'Unknown')}")
+            with col2:
+                st.markdown(f"**Business Type:** {selected_client_profile.get('business_type', 'Unknown')}")
+                if selected_client_profile.get('target_audience'):
+                    st.markdown(f"**Target Audience:** {selected_client_profile['target_audience']}")
+
+            st.info("✨ This tool will automatically use your client's information for better, personalized results!")
+        st.markdown("---")
 
     positional_params = []
     optional_params = []
@@ -108,10 +124,27 @@ def create_guided_form(script_path, script_info):
                 optional_params.append(f"--{input_name} {selected_value}")
 
         else:
-            # Text input
+            # Text input with smart auto-fill from client profile
             placeholder = input_config.get('placeholder', '')
             required = input_config.get('required', False)
-            value = st.text_input(label, placeholder=placeholder, help=help_text)
+
+            # Smart auto-fill based on input name and client profile
+            auto_fill_value = ""
+            if selected_client_profile:
+                if input_name in ['website_url', 'website', 'url', 'domain']:
+                    auto_fill_value = selected_client_profile.get('domain', '')
+                elif input_name in ['client_name', 'company_name', 'business_name']:
+                    auto_fill_value = selected_client_profile.get('name', '')
+                elif input_name in ['industry', 'business_industry']:
+                    auto_fill_value = selected_client_profile.get('industry', '')
+                elif input_name in ['target_audience', 'audience', 'customer_base']:
+                    auto_fill_value = selected_client_profile.get('target_audience', '')
+                elif input_name in ['business_type', 'company_type']:
+                    auto_fill_value = selected_client_profile.get('business_type', '')
+                elif input_name in ['location', 'city', 'area']:
+                    auto_fill_value = selected_client_profile.get('location', '')
+
+            value = st.text_input(label, value=auto_fill_value, placeholder=placeholder, help=help_text)
 
             if value or required:  # Include if value provided or if required
                 if arg_type == "positional":

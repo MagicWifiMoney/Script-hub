@@ -183,6 +183,39 @@ Format each action as:
 Make all recommendations specific, actionable, and data-driven based on the provided SEO data.
 """
 
+    def generate_content(self, prompt: str) -> APIResponse:
+        """Generate marketing content using Claude"""
+        if not self.api_key:
+            return APIResponse(False, {}, "Anthropic API key not configured")
+
+        # Create cache parameters based on prompt hash
+        cache_params = {"prompt_hash": hashlib.md5(prompt.encode()).hexdigest()[:16]}
+        cached_result = cache.get("anthropic_content_generation", cache_params)
+        if cached_result:
+            return APIResponse(True, cached_result, api_provider="anthropic", cached=True)
+
+        try:
+            import anthropic
+            client = anthropic.Anthropic(api_key=self.api_key)
+
+            response = client.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=4000,
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+            result = {
+                "content": response.content[0].text,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            # Cache the result
+            cache.set("anthropic_content_generation", cache_params, result)
+            return APIResponse(True, result, api_provider="anthropic")
+
+        except Exception as e:
+            return APIResponse(False, {}, f"Claude API error: {str(e)}")
+
 class OpenAIClient:
     """ChatGPT API client"""
 
@@ -229,6 +262,39 @@ Provide:
             }
 
             cache.set("openai_content_analysis", cache_params, result)
+            return APIResponse(True, result, api_provider="openai")
+
+        except Exception as e:
+            return APIResponse(False, {}, f"OpenAI API error: {str(e)}")
+
+    def generate_content(self, prompt: str) -> APIResponse:
+        """Generate marketing content using OpenAI/ChatGPT"""
+        if not self.api_key:
+            return APIResponse(False, {}, "OpenAI API key not configured")
+
+        # Create cache parameters based on prompt hash
+        cache_params = {"prompt_hash": hashlib.md5(prompt.encode()).hexdigest()[:16]}
+        cached_result = cache.get("openai_content_generation", cache_params)
+        if cached_result:
+            return APIResponse(True, cached_result, api_provider="openai", cached=True)
+
+        try:
+            import openai
+            client = openai.OpenAI(api_key=self.api_key)
+
+            response = client.chat.completions.create(
+                model="gpt-4o",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=4000
+            )
+
+            result = {
+                "content": response.choices[0].message.content,
+                "timestamp": datetime.now().isoformat()
+            }
+
+            # Cache the result
+            cache.set("openai_content_generation", cache_params, result)
             return APIResponse(True, result, api_provider="openai")
 
         except Exception as e:
@@ -292,6 +358,135 @@ Focus on actionable competitive insights for SEO and marketing strategy.
 
         except Exception as e:
             return APIResponse(False, {}, f"Perplexity API error: {str(e)}")
+
+    def conduct_market_research(self, target_subject: str, research_type: str, depth: str = "standard") -> APIResponse:
+        """Conduct real-time market research using Perplexity"""
+        if not self.api_key:
+            return APIResponse(False, {}, "Perplexity API key not configured")
+
+        cache_params = {"subject": target_subject, "type": research_type, "depth": depth}
+        cached_result = cache.get("perplexity_market_research", cache_params)
+        if cached_result:
+            return APIResponse(True, cached_result, api_provider="perplexity", cached=True)
+
+        # Build research prompt based on type
+        research_prompts = {
+            "competitive": f"""
+            Conduct a comprehensive competitive analysis for {target_subject}. Provide current, actionable intelligence on:
+            1. Top 5 direct competitors with recent market moves and changes
+            2. Current pricing strategies and recent pricing changes
+            3. Latest marketing campaigns and messaging strategies
+            4. Recent product launches, partnerships, or strategic moves
+            5. Market share changes and competitive positioning shifts
+            6. SEO and content marketing strategies comparison
+            7. Social media presence and engagement analysis
+            8. Customer review sentiment and recent feedback trends
+            9. Emerging competitive threats and new market entrants
+            10. Strategic recommendations for competitive advantage
+
+            Focus on actionable, recent intelligence (within last 6 months) with specific examples and data points.
+            """,
+
+            "market": f"""
+            Analyze the current market landscape for {target_subject}. Provide comprehensive market intelligence on:
+            1. Market size, growth rate, and recent market dynamics
+            2. Current industry trends and emerging opportunities
+            3. Customer behavior shifts and changing preferences
+            4. Technology disruptions and innovation trends
+            5. Regulatory changes and compliance requirements
+            6. Economic factors affecting market conditions
+            7. Geographic market variations and expansion opportunities
+            8. Seasonal patterns and cyclical trends
+            9. Investment activity and funding trends in the space
+            10. Future market predictions and growth forecasts
+
+            Include specific data, recent studies, and actionable market insights.
+            """,
+
+            "audience": f"""
+            Research the target audience for {target_subject}. Provide detailed audience intelligence on:
+            1. Demographics and psychographic profiles with recent data
+            2. Current consumer behavior patterns and purchasing trends
+            3. Pain points, challenges, and unmet needs analysis
+            4. Preferred communication channels and media consumption habits
+            5. Social media behavior and platform preferences
+            6. Search behavior, keywords used, and information seeking patterns
+            7. Brand loyalty patterns and switching behavior
+            8. Price sensitivity and value perception analysis
+            9. Influence factors in decision making process
+            10. Recent surveys, studies, and consumer sentiment data
+
+            Focus on actionable insights for marketing and product strategy.
+            """,
+
+            "keyword": f"""
+            Conduct keyword and search trend research for {target_subject}. Provide intelligence on:
+            1. High-volume, high-intent keywords with search trends
+            2. Emerging search terms and trending queries
+            3. Long-tail keyword opportunities with low competition
+            4. Search intent analysis (informational, commercial, transactional)
+            5. Seasonal keyword trends and cyclical patterns
+            6. Geographic variations in search behavior
+            7. Related topics and semantic keyword clusters
+            8. Question-based keywords and voice search trends
+            9. Competitor keyword strategies and gaps
+            10. Content opportunities based on search demand
+
+            Include specific search volume data and trend analysis where available.
+            """,
+
+            "industry": f"""
+            Analyze the {target_subject} industry with comprehensive intelligence on:
+            1. Industry size, growth trajectory, and market maturity
+            2. Key trends, disruptions, and transformation drivers
+            3. Major players, market consolidation, and competitive landscape
+            4. Innovation trends, emerging technologies, and R&D focus
+            5. Regulatory environment and compliance challenges
+            6. Supply chain dynamics and operational considerations
+            7. Investment patterns, M&A activity, and funding trends
+            8. Customer expectations evolution and service standards
+            9. Sustainability trends and environmental considerations
+            10. Future industry outlook and strategic recommendations
+
+            Provide strategic-level insights with supporting data and examples.
+            """
+        }
+
+        prompt = research_prompts.get(research_type, research_prompts["competitive"])
+
+        try:
+            headers = {
+                'Authorization': f'Bearer {self.api_key}',
+                'Content-Type': 'application/json'
+            }
+
+            response = requests.post(
+                'https://api.perplexity.ai/chat/completions',
+                headers=headers,
+                json={
+                    "model": "llama-3.1-sonar-large-128k-online",
+                    "messages": [{"role": "user", "content": prompt}],
+                    "max_tokens": 4000
+                }
+            )
+
+            response.raise_for_status()
+            result_data = response.json()
+
+            result = {
+                "research_intelligence": result_data['choices'][0]['message']['content'],
+                "research_type": research_type,
+                "target_subject": target_subject,
+                "depth": depth,
+                "timestamp": datetime.now().isoformat(),
+                "sources": "Real-time web intelligence via Perplexity AI"
+            }
+
+            cache.set("perplexity_market_research", cache_params, result)
+            return APIResponse(True, result, api_provider="perplexity")
+
+        except Exception as e:
+            return APIResponse(False, {}, f"Perplexity research API error: {str(e)}")
 
 class DataForSEOClient:
     """DataForSEO API client for comprehensive SEO data"""
